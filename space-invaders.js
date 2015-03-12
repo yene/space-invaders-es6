@@ -1,17 +1,20 @@
-;(function() {
+"use strict";
+
+;(function () {
 
   // Main game object
   // ----------------
 
   // **new Game()** Creates the game object with the game state and logic.
-  var Game = function() {
+  var Game = function Game() {
+    var _this = this;
 
     // In index.html, there is a canvas tag that the game will be drawn in.
     // Grab that canvas out of the DOM.
     var canvas = document.getElementById("space-invaders");
 
     // Get the drawing context.  This contains functions that let you draw to the canvas.
-    var screen = canvas.getContext('2d');
+    var screen = canvas.getContext("2d");
 
     // Note down the dimensions of the canvas.  These are used to
     // place game bodies.
@@ -28,18 +31,16 @@
 
     // In index.html, there is an audio tag that loads the shooting sound.
     // Get the shoot sound from the DOM and store it on the game object.
-    this.shootSound = document.getElementById('shoot-sound');
-
-    var self = this;
+    this.shootSound = document.getElementById("shoot-sound");
 
     // Main game tick function.  Loops forever, running 60ish times a second.
-    var tick = function() {
+    var tick = function () {
 
       // Update game state.
-      self.update();
+      _this.update();
 
       // Draw game bodies.
-      self.draw(screen, gameSize);
+      _this.draw(screen, gameSize);
 
       // Queue up the next call to tick with the browser.
       requestAnimationFrame(tick);
@@ -53,13 +54,15 @@
   Game.prototype = {
 
     // **update()** runs the main game logic.
-    update: function() {
-      var self = this;
+    update: function update() {
+      var _this = this;
 
       // `notCollidingWithAnything` returns true if passed body
       // is not colliding with anything.
-      var notCollidingWithAnything = function(b1) {
-        return self.bodies.filter(function(b2) { return colliding(b1, b2); }).length === 0;
+      var notCollidingWithAnything = function (b1) {
+        return _this.bodies.filter(function (b2) {
+          return colliding(b1, b2);
+        }).length === 0;
       };
 
       // Throw away bodies that are colliding with something. They
@@ -73,7 +76,7 @@
     },
 
     // **draw()** draws the game.
-    draw: function(screen, gameSize) {
+    draw: function draw(screen, gameSize) {
       // Clear away the drawing from the previous tick.
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
 
@@ -85,19 +88,17 @@
 
     // **invadersBelow()** returns true if `invader` is directly
     // above at least one other invader.
-    invadersBelow: function(invader) {
+    invadersBelow: function invadersBelow(invader) {
       // If filtered array is not empty, there are invaders below.
-      return this.bodies.filter(function(b) {
+      return this.bodies.filter(function (b) {
         // Keep `b` if it is an invader, if it is in the same column
         // as `invader`, and if it is somewhere below `invader`.
-        return b instanceof Invader &&
-          Math.abs(invader.center.x - b.center.x) < b.size.x &&
-          b.center.y > invader.center.y;
+        return b instanceof Invader && Math.abs(invader.center.x - b.center.x) < b.size.x && b.center.y > invader.center.y;
       }).length > 0;
     },
 
     // **addBody()** adds a body to the bodies array.
-    addBody: function(body) {
+    addBody: function addBody(body) {
       this.bodies.push(body);
     }
   };
@@ -106,7 +107,7 @@
   // --------
 
   // **new Invader()** creates an invader.
-  var Invader = function(game, center) {
+  var Invader = function Invader(game, center) {
     this.game = game;
     this.center = center;
     this.size = { x: 15, y: 15 };
@@ -125,7 +126,7 @@
   Invader.prototype = {
 
     // **update()** updates the state of the invader for a single tick.
-    update: function() {
+    update: function update() {
 
       // If the invader is outside the bounds of their patrol...
       if (this.patrolX < 0 || this.patrolX > 30) {
@@ -136,13 +137,11 @@
 
       // If coin flip comes up and no friends below in this
       // invader's column...
-      if (Math.random() > 0.995 &&
-          !this.game.invadersBelow(this)) {
+      if (Math.random() > 0.995 && !this.game.invadersBelow(this)) {
 
         // ... create a bullet just below the invader that will move
         // downward...
-        var bullet = new Bullet({ x: this.center.x, y: this.center.y + this.size.y / 2 },
-                                { x: Math.random() - 0.5, y: 2 });
+        var bullet = new Bullet({ x: this.center.x, y: this.center.y + this.size.y / 2 }, { x: Math.random() - 0.5, y: 2 });
 
         // ... and add the bullet to the game.
         this.game.addBody(bullet);
@@ -157,18 +156,18 @@
   };
 
   // **createInvaders()** returns an array of twenty-four invaders.
-  var createInvaders = function(game) {
+  var createInvaders = function createInvaders(game) {
     var invaders = [];
     for (var i = 0; i < 24; i++) {
 
       // Place invaders in eight columns.
-      var x = 30 + (i % 8) * 30;
+      var x = 30 + i % 8 * 30;
 
       // Place invaders in three rows.
-      var y = 30 + (i % 3) * 30;
+      var y = 30 + i % 3 * 30;
 
       // Create invader.
-      invaders.push(new Invader(game, { x: x, y: y}));
+      invaders.push(new Invader(game, { x: x, y: y }));
     }
 
     return invaders;
@@ -178,7 +177,7 @@
   // ------
 
   // **new Player()** creates a player.
-  var Player = function(game, gameSize) {
+  var Player = function Player(game, gameSize) {
     this.game = game;
     this.size = { x: 15, y: 15 };
     this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.y * 2 };
@@ -190,13 +189,12 @@
   Player.prototype = {
 
     // **update()** updates the state of the player for a single tick.
-    update: function() {
+    update: function update() {
       // If left cursor key is down...
       if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
 
         // ... move left.
         this.center.x -= 2;
-
       } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
         this.center.x += 2;
       }
@@ -204,8 +202,7 @@
       // If S key is down...
       if (this.keyboarder.isDown(this.keyboarder.KEYS.S)) {
         // ... create a bullet just above the player that will move upwards...
-        var bullet = new Bullet({ x: this.center.x, y: this.center.y - this.size.y - 10 },
-                                { x: 0, y: -7 });
+        var bullet = new Bullet({ x: this.center.x, y: this.center.y - this.size.y - 10 }, { x: 0, y: -7 });
 
         // ... add the bullet to the game...
         this.game.addBody(bullet);
@@ -223,7 +220,7 @@
   // ------
 
   // **new Bullet()** creates a new bullet.
-  var Bullet = function(center, velocity) {
+  var Bullet = function Bullet(center, velocity) {
     this.center = center;
     this.size = { x: 3, y: 3 };
     this.velocity = velocity;
@@ -232,7 +229,7 @@
   Bullet.prototype = {
 
     // **update()** updates the state of the bullet for a single tick.
-    update: function() {
+    update: function update() {
 
       // Add velocity to center to move bullet.
       this.center.x += this.velocity.x;
@@ -244,24 +241,24 @@
   // -----------------------
 
   // **new Keyboarder()** creates a new keyboard input tracking object.
-  var Keyboarder = function() {
+  var Keyboarder = function Keyboarder() {
 
     // Records up/down state of each key that has ever been pressed.
     var keyState = {};
 
     // When key goes down, record that it is down.
-    window.addEventListener('keydown', function(e) {
+    window.addEventListener("keydown", function (e) {
       keyState[e.keyCode] = true;
     });
 
     // When key goes up, record that it is up.
-    window.addEventListener('keyup', function(e) {
+    window.addEventListener("keyup", function (e) {
       keyState[e.keyCode] = false;
     });
 
     // Returns true if passed key is currently down.  `keyCode` is a
     // unique number that represents a particular key on the keyboard.
-    this.isDown = function(keyCode) {
+    this.isDown = function (keyCode) {
       return keyState[keyCode] === true;
     };
 
@@ -273,9 +270,8 @@
   // ---------------
 
   // **drawRect()** draws passed body as a rectangle to `screen`, the drawing context.
-  var drawRect = function(screen, body) {
-    screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2,
-                    body.size.x, body.size.y);
+  var drawRect = function drawRect(screen, body) {
+    screen.fillRect(body.center.x - body.size.x / 2, body.center.y - body.size.y / 2, body.size.x, body.size.y);
   };
 
   // **colliding()** returns true if two passed bodies are colliding.
@@ -287,21 +283,16 @@
   // 3. Bottom of `b1` is above the top of `b2`.
   // 4. Left of `b1` is to the right of the right of `b2`.
   // 5. Top of `b1` is below the bottom of `b2`.
-  var colliding = function(b1, b2) {
-    return !(
-      b1 === b2 ||
-        b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 ||
-        b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 ||
-        b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 ||
-        b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2
-    );
+  var colliding = function colliding(b1, b2) {
+    return !(b1 === b2 || b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 || b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 || b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 || b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
   };
 
   // Start game
   // ----------
 
   // When the DOM is ready, create (and start) the game.
-  window.addEventListener('load', function() {
+  window.addEventListener("load", function () {
     new Game();
   });
 })();
+

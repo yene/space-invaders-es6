@@ -30,16 +30,14 @@
     // Get the shoot sound from the DOM and store it on the game object.
     this.shootSound = document.getElementById('shoot-sound');
 
-    var self = this;
-
     // Main game tick function.  Loops forever, running 60ish times a second.
-    var tick = function() {
+    var tick = () => {
 
       // Update game state.
-      self.update();
+      this.update();
 
       // Draw game bodies.
-      self.draw(screen, gameSize);
+      this.draw(screen, gameSize);
 
       // Queue up the next call to tick with the browser.
       requestAnimationFrame(tick);
@@ -54,12 +52,11 @@
 
     // **update()** runs the main game logic.
     update: function() {
-      var self = this;
 
       // `notCollidingWithAnything` returns true if passed body
       // is not colliding with anything.
-      var notCollidingWithAnything = function(b1) {
-        return self.bodies.filter(function(b2) { return colliding(b1, b2); }).length === 0;
+      var notCollidingWithAnything = b1 => {
+        return this.bodies.filter(function(b2) { return colliding(b1, b2); }).length === 0;
       };
 
       // Throw away bodies that are colliding with something. They
