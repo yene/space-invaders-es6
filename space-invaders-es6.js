@@ -4,55 +4,53 @@
   // ----------------
 
   // **new Game()** Creates the game object with the game state and logic.
-  var Game = function() {
+  class Game {
 
-    // In index.html, there is a canvas tag that the game will be drawn in.
-    // Grab that canvas out of the DOM.
-    var canvas = document.getElementById("space-invaders");
+    constructor() {
+      // In index.html, there is a canvas tag that the game will be drawn in.
+      // Grab that canvas out of the DOM.
+      var canvas = document.getElementById("space-invaders");
 
-    // Get the drawing context.  This contains functions that let you draw to the canvas.
-    var screen = canvas.getContext('2d');
+      // Get the drawing context.  This contains functions that let you draw to the canvas.
+      var screen = canvas.getContext('2d');
 
-    // Note down the dimensions of the canvas.  These are used to
-    // place game bodies.
-    var gameSize = { x: canvas.width, y: canvas.height };
+      // Note down the dimensions of the canvas.  These are used to
+      // place game bodies.
+      var gameSize = { x: canvas.width, y: canvas.height };
 
-    // Create the bodies array to hold the player, invaders and bullets.
-    this.bodies = [];
+      // Create the bodies array to hold the player, invaders and bullets.
+      this.bodies = [];
 
-    // Add the invaders to the bodies array.
-    this.bodies = this.bodies.concat(createInvaders(this));
+      // Add the invaders to the bodies array.
+      this.bodies = this.bodies.concat(createInvaders(this));
 
-    // Add the player to the bodies array.
-    this.bodies = this.bodies.concat(new Player(this, gameSize));
+      // Add the player to the bodies array.
+      this.bodies = this.bodies.concat(new Player(this, gameSize));
 
-    // In index.html, there is an audio tag that loads the shooting sound.
-    // Get the shoot sound from the DOM and store it on the game object.
-    this.shootSound = document.getElementById('shoot-sound');
+      // In index.html, there is an audio tag that loads the shooting sound.
+      // Get the shoot sound from the DOM and store it on the game object.
+      this.shootSound = document.getElementById('shoot-sound');
 
-    // Main game tick function.  Loops forever, running 60ish times a second.
-    var tick = () => {
+      // Main game tick function.  Loops forever, running 60ish times a second.
+      var tick = () => {
 
-      // Update game state.
-      this.update();
+        // Update game state.
+        this.update();
 
-      // Draw game bodies.
-      this.draw(screen, gameSize);
+        // Draw game bodies.
+        this.draw(screen, gameSize);
 
-      // Queue up the next call to tick with the browser.
-      requestAnimationFrame(tick);
-    };
+        // Queue up the next call to tick with the browser.
+        requestAnimationFrame(tick);
+      };
 
-    // Run the first game tick.  All future calls will be scheduled by
-    // the tick() function itself.
-    tick();
-  };
-
-  Game.prototype = {
+      // Run the first game tick.  All future calls will be scheduled by
+      // the tick() function itself.
+      tick();
+    }
 
     // **update()** runs the main game logic.
-    update: function() {
-
+    update() {
       // `notCollidingWithAnything` returns true if passed body
       // is not colliding with anything.
       var notCollidingWithAnything = b1 => {
@@ -67,10 +65,10 @@
       for (var i = 0; i < this.bodies.length; i++) {
         this.bodies[i].update();
       }
-    },
+    }
 
     // **draw()** draws the game.
-    draw: function(screen, gameSize) {
+    draw(screen, gameSize) {
       // Clear away the drawing from the previous tick.
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
 
@@ -78,11 +76,11 @@
       for (var i = 0; i < this.bodies.length; i++) {
         drawRect(screen, this.bodies[i]);
       }
-    },
+    }
 
     // **invadersBelow()** returns true if `invader` is directly
     // above at least one other invader.
-    invadersBelow: function(invader) {
+    invadersBelow(invader) {
       // If filtered array is not empty, there are invaders below.
       return this.bodies.filter(function(b) {
         // Keep `b` if it is an invader, if it is in the same column
@@ -91,38 +89,37 @@
           Math.abs(invader.center.x - b.center.x) < b.size.x &&
           b.center.y > invader.center.y;
       }).length > 0;
-    },
+    }
 
     // **addBody()** adds a body to the bodies array.
-    addBody: function(body) {
+    addBody(body) {
       this.bodies.push(body);
     }
-  };
+  }
 
   // Invaders
   // --------
 
   // **new Invader()** creates an invader.
-  var Invader = function(game, center) {
-    this.game = game;
-    this.center = center;
-    this.size = { x: 15, y: 15 };
+  class Invader {
+    constructor(game, center) {
+      this.game = game;
+      this.center = center;
+      this.size = { x: 15, y: 15 };
 
-    // Invaders patrol from left to right and back again.
-    // `this.patrolX` records the current (relative) position of the
-    // invader in their patrol.  It starts at 0, increases to 40, then
-    // decreases to 0, and so forth.
-    this.patrolX = 0;
+      // Invaders patrol from left to right and back again.
+      // `this.patrolX` records the current (relative) position of the
+      // invader in their patrol.  It starts at 0, increases to 40, then
+      // decreases to 0, and so forth.
+      this.patrolX = 0;
 
-    // The x speed of the invader.  A positive value moves the invader
-    // right. A negative value moves it left.
-    this.speedX = 0.3;
-  };
-
-  Invader.prototype = {
+      // The x speed of the invader.  A positive value moves the invader
+      // right. A negative value moves it left.
+      this.speedX = 0.3;
+    }
 
     // **update()** updates the state of the invader for a single tick.
-    update: function() {
+    update() {
 
       // If the invader is outside the bounds of their patrol...
       if (this.patrolX < 0 || this.patrolX > 30) {
@@ -151,7 +148,7 @@
       // Update variable that keeps track of current position in patrol.
       this.patrolX += this.speedX;
     }
-  };
+  }
 
   // **createInvaders()** returns an array of twenty-four invaders.
   var createInvaders = function(game) {
@@ -175,19 +172,18 @@
   // ------
 
   // **new Player()** creates a player.
-  var Player = function(game, gameSize) {
-    this.game = game;
-    this.size = { x: 15, y: 15 };
-    this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.y * 2 };
+  class Player {
+    constructor(game, gameSize) {
+      this.game = game;
+      this.size = { x: 15, y: 15 };
+      this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.y * 2 };
 
-    // Create a keyboard object to track button presses.
-    this.keyboarder = new Keyboarder();
-  };
-
-  Player.prototype = {
+      // Create a keyboard object to track button presses.
+      this.keyboarder = new Keyboarder();
+    }
 
     // **update()** updates the state of the player for a single tick.
-    update: function() {
+    update() {
       // If left cursor key is down...
       if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
 
@@ -214,28 +210,27 @@
         this.game.shootSound.play();
       }
     }
-  };
+  }
 
   // Bullet
   // ------
 
   // **new Bullet()** creates a new bullet.
-  var Bullet = function(center, velocity) {
-    this.center = center;
-    this.size = { x: 3, y: 3 };
-    this.velocity = velocity;
-  };
-
-  Bullet.prototype = {
+  class Bullet {
+    constructor(center, velocity) {
+      this.center = center;
+      this.size = { x: 3, y: 3 };
+      this.velocity = velocity;
+    }
 
     // **update()** updates the state of the bullet for a single tick.
-    update: function() {
+    update() {
 
       // Add velocity to center to move bullet.
       this.center.x += this.velocity.x;
       this.center.y += this.velocity.y;
     }
-  };
+  }
 
   // Keyboard input tracking
   // -----------------------
