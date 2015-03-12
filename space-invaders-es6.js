@@ -62,7 +62,7 @@
       this.bodies = this.bodies.filter(notCollidingWithAnything);
 
       // Call update on every body.
-      for (var i = 0; i < this.bodies.length; i++) {
+      for (let i = 0; i < this.bodies.length; i++) {
         this.bodies[i].update();
       }
     }
@@ -73,7 +73,7 @@
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
 
       // Draw each body as a rectangle.
-      for (var i = 0; i < this.bodies.length; i++) {
+      for (let i = 0; i < this.bodies.length; i++) {
         drawRect(screen, this.bodies[i]);
       }
     }
@@ -153,7 +153,7 @@
   // **createInvaders()** returns an array of twenty-four invaders.
   var createInvaders = function(game) {
     var invaders = [];
-    for (var i = 0; i < 24; i++) {
+    for (let i = 0; i < 24; i++) {
 
       // Place invaders in eight columns.
       var x = 30 + (i % 8) * 30;
@@ -239,7 +239,7 @@
   var Keyboarder = function() {
 
     // Records up/down state of each key that has ever been pressed.
-    var keyState = {};
+    let keyState = {};
 
     // When key goes down, record that it is down.
     window.addEventListener('keydown', function(e) {
